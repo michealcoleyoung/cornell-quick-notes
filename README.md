@@ -1,3 +1,4 @@
+# Cornell Quick Notes
 **Cornell Quick Notes** is a web application designed to help users organize their notes efficiently using the Cornell Note-Taking Method. This method involves dividing a page into three sections:
 
 1. **Cue Column:** Keywords or questions related to the main topic.
