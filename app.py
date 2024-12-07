@@ -24,14 +24,65 @@ def init_db():
     connect.commit()
     connect.close()
 
-
 @app.route("/")
 def home():
     return render_template('index.html')
 
 @app.route('/add_note', methods=['POST'])
 def add_note():
-    print(request.form)
+
+    # Database setup
+    DB_PATH = 'notes.db'
+    
+    def init_db():
+        try:
+            connect = sqlite3.connect(DB_PATH)
+            cursor = connect.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS notes (
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           class TEXT,
+                           date TEXT,
+                           topic TEXT,
+                           main_points TEXT,
+                           notes TEXT,
+                           summary TEXT
+                )
+            ''')
+            connect.commit()
+            connect.close()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+    
+    @app.route("/")
+    def home():
+        return render_template('index.html')
+    
+    @app.route('/add_note', methods=['POST'])
+    def add_note():
+        try:
+            note_content = request.form['note']
+            class_name = request.form['class']
+            date = request.form['date']
+            topic = request.form['topic']
+            main_points = request.form['main_points']
+            summary = request.form['summary']
+    
+            connectdb = sqlite3.connect(DB_PATH)
+            cursor = connectdb.cursor()
+            cursor.execute('''
+                INSERT INTO notes (class, date, topic, main_points, notes, summary)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (class_name, date, topic, main_points, note_content, summary))
+            connectdb.commit()
+            connectdb.close()
+            return f'<li class="list-group-item">{note_content}</li>'
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+        except KeyError:
+            return "No note content provided", 400
+    
+
     if 'note' not in request.form:
         return "No note content provided", 400
     note_content = request.form['note']
