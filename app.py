@@ -22,7 +22,8 @@ class Note(db.Model):
 
 @app.route("/")
 def home():
-    return render_template('index.html')
+    notes = Note.query.all()
+    return render_template('index.html', notes=notes)
 
 @app.route('/add_note', methods=['POST'])
 def add_note():
@@ -31,7 +32,8 @@ def add_note():
     db.session.add(new_note)
     db.session.commit()
 
-    return f'<li class="list-group-item">{note_content}</li>'
+    return f'<li class="list-group-item d-flex justify-content-between align-items-center" data-note-id="{new_note.id}">{note_content}<button class="btn btn-danger btn-sm" onclick="deleteNote(this)">Delete</button></li>'
+
 
 @app.route('/delete_note/<int:note_id>', methods=['DELETE'])
 def delete_note(note_id):

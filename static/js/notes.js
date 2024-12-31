@@ -2,23 +2,39 @@ function addNote() {
   const noteInput = document.getElementById('note');
   const noteContent = noteInput.value;
 
-  // Create a new list item for the note
-  const newNote = document.createElement('li');
-  newNote.className = 'list-group-item d-flex justify-content-between align-items-center';
-  newNote.innerHTML = `${noteContent} <button class="btn btn-danger btn-sm" onclick="deleteNote(this)">Delete</button>`;
+  fetch('/add_note', {
+    method: 'POST',
+    headers: {
+      'Content_Type': 'application/x-www-form-urlencoded',
+    },
+    body: `note=${encodeURIComponent(noteContent)}`
+  })
+    .then(response => response.text())
+    .then(html => {
 
-  // Append the new note to the list
-  const notesList = document.getElementById('notes-list');
-  notesList.classList.remove('hidden'); // Show the list if hidden
-  notesList.appendChild(newNote);
+      const notesList = document.getElementById('notes-list');
+      notesList.classList.remove('hidden');
+      notesList.insertAdjacentHTML('beforeend', html);
+      noteInput.value = '';
+    }).catch(error => console.error('Error:', error));
+  return false;
 
-  // Clear the input field
-  noteInput.value = '';
-
-  return false; // Prevent form submission
 }
 
 function deleteNote(button) {
   const noteItem = button.parentElement;
-  noteItem.remove();
+  const noteId = noteItem.getAttribute('data-note-id');
+
+  fetch(`/delete_note/${noteId}`, {
+    method: 'DELETE'
+  })
+    .then(response => {
+      if (response.ok) {
+        noteItem.remove();
+
+      } else {
+        console.error('Failed to delete note');
+      }
+    })
+    .catch(error => console.error('Error:', error))
 }
