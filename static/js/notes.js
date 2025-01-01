@@ -2,10 +2,15 @@ function addNote() {
   const noteInput = document.getElementById('note');
   const noteContent = noteInput.value;
 
+  if (!noteContent.trim()) {
+    console.error('Note content cannot be empty');
+    return false;
+  }
+
   fetch('/add_note', {
     method: 'POST',
     headers: {
-      'Content_Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: `note=${encodeURIComponent(noteContent)}`
   })
