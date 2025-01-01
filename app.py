@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 from config import Config
 
 
@@ -18,7 +19,7 @@ class Note(db.Model):
     main_points = db.Column(db.Text)
     notes = db.Column(db.Text)
     summary = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, db.func.current_timestamp())
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 @app.route("/")
 def home():
@@ -43,8 +44,8 @@ def delete_note(note_id):
     
     return '', 204  # No content response
 
+with app.app_context():
+    db.create_all()
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    
     app.run(debug=True)
