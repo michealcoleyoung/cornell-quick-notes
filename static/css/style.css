@@ -194,6 +194,7 @@ textarea {
 .list-group-item {
     margin-bottom: 10px;
     border-radius: 5px !important;
+    cursor: pointer;
 }
 
 .list-group-item:last-child {
