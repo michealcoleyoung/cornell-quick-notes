@@ -44,6 +44,35 @@ def delete_note(note_id):
     
     return '', 204  # No content response
 
+@app.route('/save_note_content/<int:note_id>', methods=['POST'])
+def save_note_content(note_id):
+    note = Note.query.get_or_404(note_id)
+    data = request.json
+
+    note.class_name = data.get('class_name')
+    note.date = data.get('date')
+    note.topic = data.get('topic')
+    note.main_points = data.get('main_points')
+    note.notes = data.get('notes')
+    note.summary = data.get('summary')
+
+    db.session.commit()
+
+    return '', 204  # No content response
+
+@app.route('/get_note_content/<int:note_id>')
+def get_note_content(note_id):
+    note = Note.query.get_or_404(note_id)
+    return {
+        'class_name': note.class_name,
+        'date': note.date,
+        'topic': note.topic,
+        'main_points': note.main_points,
+        'notes': note.notes,
+        'summary': note.summary
+    }
+
+
 with app.app_context():
     db.create_all()
 

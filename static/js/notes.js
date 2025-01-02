@@ -1,3 +1,5 @@
+let currentNoteId = null; // Track the currently selected note
+
 function addNote() {
   const noteInput = document.getElementById('note');
   const noteContent = noteInput.value;
@@ -21,6 +23,12 @@ function addNote() {
       notesList.classList.remove('hidden');
       notesList.insertAdjacentHTML('beforeend', html);
       noteInput.value = '';
+
+      const  newNote = notesList.lastElementChild;
+      newNote.addEventListener('click', function(e) {
+        if (e.target !== this) return; // Ignore clicks on child elements
+        loadNoteContent(this.getAttribute('data-note-id'));
+      })
     }).catch(error => console.error('Error:', error));
   return false;
 
@@ -43,3 +51,60 @@ function deleteNote(button) {
     })
     .catch(error => console.error('Error:', error))
 }
+
+function saveNoteContent(noteId) {
+  const data = {
+    class_name: document.getElementById('class').value,
+    date: document.getElementById('date').value,
+    topic: document.getElementById('topic').value,
+    main_points: document.getElementById('main-points').value,
+    notes: document.getElementById('notes').value,
+    summary: document.getElementById('summary').value
+  };
+
+
+  fetch(`/save_note_content/${noteId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+.catch(error => console.error('Error saving note:', error));
+}
+function loadNoteContent(noteId) {
+  currentNoteId = noteId;
+  fetch(`/get_note_content/${noteId}`)
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('class').value = data.class_name || '';
+    document.getElementById('date').value = data.date || '';
+    document.getElementById('topic').value = data.topic || '';
+    document.getElementById('main-points').value = data.main_points || '';
+    document.getElementById('notes').value = data.notes || '';
+    document.getElementById('summary').value = data.summary || '';
+  })
+  .catch(error => console.error('Error loading note:', error));
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Get all form fields
+  const formFields = [
+    'class',
+    'date',
+    'topic',
+    'main-points',
+    'notes',
+    'summary'
+    
+  ];
+
+  // Add change listeners to all fields
+  formFields.forEach(fieldId => {
+    document.getElementById(fieldId).addEventListener('change', function() {
+      if(currentNoteId) {
+        saveNoteContent(currentNoteId);
+      }
+    });
+  });
+});
