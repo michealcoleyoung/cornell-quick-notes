@@ -87,6 +87,22 @@ function loadNoteContent(noteId) {
   .catch(error => console.error('Error loading note:', error));
 }
 
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US');  // Returns MM/DD/YYYY
+}
+
+
+
+function getDateValue(formattedDate) {
+    if (!formattedDate) return '';
+    const date = new Date(formattedDate);
+    return date.toISOString().split('T')[0];  // Returns YYYY-MM-DD for input
+}
+  
+
 document.addEventListener('DOMContentLoaded', function () {
   // Get all form fields
   const formFields = [
@@ -107,4 +123,12 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
+
+  const existingNotes = document.querySelectorAll('#notes-list li');
+  existingNotes.forEach(note => {
+    note.addEventListener('click', function(e) {
+      if (e.target !== this) return; // Ignore clicks on child elements
+      loadNoteContent(this.getAttribute('data-note-id'));
+    })
+  })
 });
