@@ -73,6 +73,19 @@ function saveNoteContent(noteId) {
 .catch(error => console.error('Error saving note:', error));
 }
 function loadNoteContent(noteId) {
+
+  // Remove highlight from previously selected note
+  document.querySelectorAll('#notes-list li').forEach(note => {
+    note.classList.remove('selected-note');
+  });
+
+  // Add highlight to current note
+  const selectedNote = document.querySelector(`li[data-note-id="${noteId}"]`);
+
+  if(selectedNote) {
+    selectedNote.classList.add('selected-note');
+  }
+
   currentNoteId = noteId;
   fetch(`/get_note_content/${noteId}`)
   .then(response => response.json())

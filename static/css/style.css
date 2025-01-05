@@ -214,3 +214,8 @@ textarea {
     padding: 0 10px;
 }
 
+
+.selected-note { 
+    background: #e9ecef;
+    border-left: 4px solid #0d6efd;
+}
