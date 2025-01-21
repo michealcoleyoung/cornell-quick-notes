@@ -45,11 +45,21 @@ function deleteNote(button) {
       if (response.ok) {
         noteItem.remove();
 
+        // Clear and disable form fields
+        const formFields = ['class', 'date', 'topic', 'main-points', 'notes', 'summary'];
+
+        formFields.forEach(fieldId => {
+          const field = document.getElementById(fieldId);
+          field.value = '';
+          field.disabled = true;
+        });
+        currentNoteId = null;
+
       } else {
         console.error('Failed to delete note');
       }
     })
-    .catch(error => console.error('Error:', error))
+    .catch(error => console.error('Error:', error));
 }
 
 function saveNoteContent(noteId) {
@@ -87,6 +97,14 @@ function loadNoteContent(noteId) {
   }
 
   currentNoteId = noteId;
+
+  // Enable all form fields
+  const formFields = ['class', 'date', 'topic', 'main-points', 'notes', 'summary'];
+
+  formFields.forEach(fieldId => {
+    document.getElementById(fieldId).disabled = false;
+  });
+
   fetch(`/get_note_content/${noteId}`)
   .then(response => response.json())
   .then(data => {
