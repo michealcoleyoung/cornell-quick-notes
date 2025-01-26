@@ -63,25 +63,45 @@ function deleteNote(button) {
 }
 
 function saveNoteContent(noteId) {
-  const data = {
-    class_name: document.getElementById('class').value,
-    date: document.getElementById('date').value,
-    topic: document.getElementById('topic').value,
-    main_points: document.getElementById('main-points').value,
-    notes: document.getElementById('notes').value,
-    summary: document.getElementById('summary').value
-  };
+    const indicator = document.getElementById('saving-indicator');
+    indicator.style.display = 'block';
+    indicator.textContent = 'Saving...';
+    indicator.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
 
-
-  fetch(`/save_note_content/${noteId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  })
-.catch(error => console.error('Error saving note:', error));
+    fetch(`/save_note_content/${noteId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            class_name: document.getElementById('class').value,
+            date: document.getElementById('date').value,
+            topic: document.getElementById('topic').value,
+            main_points: document.getElementById('main-points').value,
+            notes: document.getElementById('notes').value,
+            summary: document.getElementById('summary').value
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to save');
+        }
+        indicator.textContent = 'Saved!';
+        indicator.style.backgroundColor = '#198754';  // Success green
+        setTimeout(() => {
+            indicator.style.display = 'none';
+        }, 1000);
+    })
+    .catch(error => {
+        console.error('Error saving note:', error);
+        indicator.textContent = 'Error saving!';
+        indicator.style.backgroundColor = '#dc3545';  // Danger red
+        setTimeout(() => {
+            indicator.style.display = 'none';
+        }, 2000);
+    });
 }
+
 function loadNoteContent(noteId) {
 
   // Remove highlight from previously selected note
