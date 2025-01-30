@@ -29,7 +29,7 @@
               <!-- Existing notes will be populated here -->
                {% for note in notes %}
                <li class="list-group-item d-flex justify-content-between align-items-center" data-note-id="{{ note.id }}">
-                {{ note.title}}
+                <button class="btn-primary">{{ note.title}}</button> 
                 <button class="btn btn-danger btn-sm" onclick="deleteNote(this)">Delete</button>
                </li>
                {% endfor %}
@@ -40,42 +40,45 @@
 
       <!-- Main content area -->
       <div class="col-md-10 main-content">
-        <header class="text-center my-4">
+        <header class="text-center">
           <h1>Cornell Quick Notes</h1>
         </header>
-        <div class="row">
-          <div class="col-md-3">
-            <label for="class">Class:</label>
-            <input type="text" class="form-control" id="class" disabled>
-          </div>
-          <div class="col-md-3">
-            <label for="date">Date:</label>
-            <input type="date" class="form-control" id="date" disabled>
-          </div>
-          <div class="col-md-6">
-            <label for="topic">Topic:</label>
-            <input type="text" class="form-control" id="topic" disabled>
+        
+        <div class="cornell-container">
+          <div class="cornell-header">
+            <div class="row g-2">
+              <div class="col-md-3">
+                <label for="class">Class:</label>
+                <input type="text" class="form-control" id="class" disabled>
+              </div>
+              <div class="col-md-3">
+                <label for="date">Date:</label>
+                <input type="date" class="form-control" id="date" disabled>
+              </div>
+              <div class="col-md-6">
+                <label for="topic">Topic:</label>
+                <input type="text" class="form-control" id="topic" disabled>
+              </div>
+            </div>
+          </div><br>
+          
+          <div class="cornell-body">
+            <div class="main-points-column">
+              <h5>Main Points</h5>
+              <textarea class="form-control" id="main-points" disabled></textarea>
+            </div><br>
+            
+            <div class="notes-column">
+              <h5>Notes</h5>
+              <textarea class="form-control" id="notes" disabled></textarea>
+            </div>
+          </div><br>
+          
+          <div class="summary-section">
+            <h5>Summary</h5>
+            <textarea class="form-control" id="summary" disabled></textarea>
           </div>
         </div>
-        <div class="row mt-3">
-          <div class="col-md-2">
-            <h4>Main Points</h4>
-            <textarea class="form-control" rows="30" id="main-points" disabled></textarea>
-          </div>
-          <div class="col-md-10">
-            <h4>Notes</h4>
-            <textarea class="form-control" rows="30" id="notes" disabled></textarea>
-          </div>
-        </div>
-        <div class="row mt-3">
-          <div class="col-md-12">
-            <h4>Summary</h4>
-            <textarea class="form-control" rows="10" id="summary" disabled></textarea>
-          </div>
-        </div>
-        <footer class="text-center mt-3">
-          Page 1
-        </footer>
       </div>
     </div>
   </div>
