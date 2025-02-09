@@ -197,6 +197,7 @@ textarea {
     padding: 10px;
     margin-bottom: 8px;
     word-break: break-word;
+    border-radius: 5px !important;
 }
 
 .list-group-item:last-child {
