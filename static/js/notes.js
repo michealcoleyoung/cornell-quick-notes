@@ -1,5 +1,17 @@
 let currentNoteId = null; // Track the currently selected note
 
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 function addNote() {
   const noteInput = document.getElementById('note');
   const noteContent = noteInput.value;
@@ -19,10 +31,10 @@ function addNote() {
     .then(response => response.text())
     .then(html => {
 
-      const notesList = document.getElementById('notes-list');
+  const notesList = document.getElementById('notes-list');
       notesList.classList.remove('hidden');
       notesList.insertAdjacentHTML('beforeend', html);
-      noteInput.value = '';
+  noteInput.value = '';
 
       const  newNote = notesList.lastElementChild;
       newNote.addEventListener('click', function(e) {
@@ -43,7 +55,7 @@ function deleteNote(button) {
   })
     .then(response => {
       if (response.ok) {
-        noteItem.remove();
+  noteItem.remove();
 
         // Clear and disable form fields
         const formFields = ['class', 'date', 'topic', 'main-points', 'notes', 'summary'];
@@ -77,9 +89,9 @@ function saveNoteContent(noteId) {
             class_name: document.getElementById('class').value,
             date: document.getElementById('date').value,
             topic: document.getElementById('topic').value,
-            main_points: document.getElementById('main-points').value,
-            notes: document.getElementById('notes').value,
-            summary: document.getElementById('summary').value
+            main_points: mainPointsEditor.root.innerHTML,
+            notes: notesEditor.root.innerHTML,
+            summary: summaryEditor.root.innerHTML
         })
     })
     .then(response => {
@@ -118,24 +130,22 @@ function loadNoteContent(noteId) {
 
   currentNoteId = noteId;
 
-  // Enable all form fields
-  const formFields = ['class', 'date', 'topic', 'main-points', 'notes', 'summary'];
-
-  formFields.forEach(fieldId => {
+  // Enable form fields
+  ['class', 'date', 'topic'].forEach(fieldId => {
     document.getElementById(fieldId).disabled = false;
   });
 
   fetch(`/get_note_content/${noteId}`)
-  .then(response => response.json())
-  .then(data => {
-    document.getElementById('class').value = data.class_name || '';
-    document.getElementById('date').value = data.date || '';
-    document.getElementById('topic').value = data.topic || '';
-    document.getElementById('main-points').value = data.main_points || '';
-    document.getElementById('notes').value = data.notes || '';
-    document.getElementById('summary').value = data.summary || '';
-  })
-  .catch(error => console.error('Error loading note:', error));
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('class').value = data.class_name || '';
+      document.getElementById('date').value = data.date || '';
+      document.getElementById('topic').value = data.topic || '';
+      mainPointsEditor.root.innerHTML = data.main_points || '';
+      notesEditor.root.innerHTML = data.notes || '';
+      summaryEditor.root.innerHTML = data.summary || '';
+    })
+    .catch(error => console.error('Error loading note:', error));
 }
 
 
@@ -155,31 +165,53 @@ function getDateValue(formattedDate) {
   
 
 document.addEventListener('DOMContentLoaded', function () {
-  // Get all form fields
-  const formFields = [
-    'class',
-    'date',
-    'topic',
-    'main-points',
-    'notes',
-    'summary'
-    
-  ];
-
-  // Add change listeners to all fields
-  formFields.forEach(fieldId => {
-    document.getElementById(fieldId).addEventListener('change', function() {
-      if(currentNoteId) {
-        saveNoteContent(currentNoteId);
-      }
+    // Form field listeners
+    ['class', 'date', 'topic'].forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        field.addEventListener('input', function() {
+            if(currentNoteId) {
+                saveNoteContent(currentNoteId);
+            }
+        });
     });
-  });
 
-  const existingNotes = document.querySelectorAll('#notes-list li');
-  existingNotes.forEach(note => {
-    note.addEventListener('click', function(e) {
-      if (e.target !== this) return; // Ignore clicks on child elements
-      loadNoteContent(this.getAttribute('data-note-id'));
-    })
-  })
+    // Quill editor listeners
+    [mainPointsEditor, notesEditor, summaryEditor].forEach(editor => {
+        editor.on('text-change', debounce(() => {
+            if(currentNoteId) {
+                saveNoteContent(currentNoteId);
+            }
+        }, 1000));
+    });
+
+    // Add click handlers for existing notes
+    const existingNotes = document.querySelectorAll('#notes-list li');
+    existingNotes.forEach(note => {
+        note.addEventListener('click', function(e) {
+            if (e.target !== this) return; // Ignore clicks on child elements
+            loadNoteContent(this.getAttribute('data-note-id'));
+        });
+    });
 });
+
+// Add character/line limits
+const LIMITS = {
+    mainPoints: 1000,  // Adjust these numbers
+    notes: 2000,
+    summary: 500
+};
+
+// Add content monitoring
+function checkContentLimits(editor, limit) {
+    const length = editor.getText().length;
+    const container = editor.container.querySelector('.ql-editor');
+    
+    if (length >= limit * 0.9) {  // At 90% capacity
+        container.classList.add('near-limit');
+    }
+    if (length >= limit) {  // At full capacity
+        container.classList.add('at-limit');
+        return false;  // Prevent more input
+    }
+    return true;
+}

@@ -237,131 +237,151 @@ textarea {
 
 /* Cornell Notes Layout */
 .cornell-container {
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 120px); /* Adjust based on header height */
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 150px); /* Increased space for header */
+    min-height: 0; /* Allows container to shrink */
 }
 
 .cornell-header {
-  padding: 0 5px; /* Match the padding of the content below */
+    padding: 0 5px; /* Match the padding of the content below */
 }
 
 .cornell-header .row {
-  margin: 0;
+    margin: 0;
 }
 
 .cornell-header .col-md-3,
 .cornell-header .col-md-6 {
-  padding: 0;
+    padding: 0;
 }
 
 .cornell-header .col-md-3:first-child {
-  padding-right: 2.5px;
+    padding-right: 2.5px;
 }
 
 .cornell-header .col-md-3:nth-child(2) {
-  padding: 0 2.5px;
+    padding: 0 2.5px;
 }
 
 .cornell-header .col-md-6 {
-  padding-left: 2.5px;
+    padding-left: 2.5px;
 }
 
 .cornell-body {
-  display: flex;
-  flex: 1;
-  gap: 5px;
-  padding: 5px 5px; /* Match the header padding */
+    display: flex;
+    flex: 1;
+    gap: 5px;
+    padding: 5px 5px; /* Match the header padding */
 }
 
 .main-points-column {
-  width: 30%;
-  display: flex;
-  flex-direction: column;
+    width: 30%;
+    display: flex;
+    flex-direction: column;
 }
 
 .notes-column {
-  width: 70%;
-  display: flex;
-  flex-direction: column;
+    width: 70%;
+    display: flex;
+    flex-direction: column;
 }
 
 .main-points-column textarea,
 .notes-column textarea {
-  flex: 1;
-  width: 100%;
-  border: 1px solid #dee2e6;
-  border-radius: 4px;
+    flex: 1;
+    width: 100%;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
 }
 
 .summary-section {
-  height: 150px;
-  padding: 0 5px; /* Match the header and body padding */
+    height: auto; /* Let it adjust naturally */
+    padding: 0 5px;
+    margin-bottom: 20px; /* Space for export button */
 }
 
 .summary-section textarea {
-  height: calc(100% - 25px);
-  width: 100%;
-  border: 1px solid #dee2e6;
-  border-radius: 4px;
+    height: calc(100% - 25px);
+    width: 100%;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.summary-section .ql-container {
+    height: calc(15vh - 80px) !important; /* Reduced height */
+    overflow-y: auto;
+}
+
+.summary-section .btn {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 /* Make headings more compact */
 .cornell-body h5,
 .summary-section h5 {
-  margin: 0 0 5px 0;
-  font-size: 1rem;
+    margin: 0 0 5px 0;
+    font-size: 1rem;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .cornell-body {
-    flex-direction: column;
-  }
-  
-  .main-points-column,
-  .notes-column {
-    width: 100%;
-    height: 300px;
-  }
-  
-  .summary-section {
-    height: 120px;
-  }
+    .cornell-body {
+        flex-direction: column;
+    }
+    
+    .main-points-column,
+    .notes-column {
+        width: 100%;
+        height: 300px;
+        background: blue;
+    }
+    
+    .summary-section {
+        height: 120px;
+    }
 }
 
 /* Style the add note form */
 #add-note-form {
-  margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 #add-note-form .input-group {
-  width: 100%;
+    width: 100%;
 }
 
 #add-note-form input {
-  min-height: 38px;
+    min-height: 38px;
 }
 
 /* Style the note title button */
 .list-group-item button.btn-primary {
-  text-align: left;
-  white-space: normal;
-  word-wrap: break-word;
-  width: calc(100% - 70px); /* Give space for delete button */
-  background: none;
-  border: none;
-  color: #212529;
-  padding: 0;
-  margin-right: 10px;
+    text-align: left;
+    white-space: normal;
+    word-wrap: break-word;
+    width: calc(100% - 70px); /* Give space for delete button */
+    background: none;
+    border: none;
+    color: #212529;
+    padding: 0;
+    margin-right: 10px;
 }
 
 .list-group-item button.btn-primary:hover {
-  color: #0d6efd;
+    color: #0d6efd;
 }
 
 /* Style the delete button */
 .list-group-item button.btn-danger {
-  min-width: 60px;
-  padding: 3px 8px;
+    min-width: 60px;
+    padding: 3px 8px;
+}
+
+/* Adjust the main sections heights */
+.main-points-column .ql-container,
+.notes-column .ql-container {
+    height: calc(55vh - 150px) !important; /* Slightly reduced */
+    overflow-y: auto;
 }

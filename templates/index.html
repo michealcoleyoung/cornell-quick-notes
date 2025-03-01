@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css/style.css">
   <script src="/static/js/notes.js"></script>
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 </head>
 
 <body>
@@ -65,18 +67,18 @@
           <div class="cornell-body">
             <div class="main-points-column">
               <h5>Main Points</h5>
-              <textarea class="form-control" id="main-points" disabled></textarea>
+              <div id="main-points-editor"></div>
             </div><br>
             
             <div class="notes-column">
               <h5>Notes</h5>
-              <textarea class="form-control" id="notes" disabled></textarea>
+              <div id="notes-editor"></div>
             </div>
           </div><br>
           
           <div class="summary-section">
             <h5>Summary</h5>
-            <textarea class="form-control" id="summary" disabled></textarea>
+            <div id="summary-editor"></div>
             <button class="btn btn-primary" style="width: 100%;">EXPORT</button>
           </div>
         </div>
@@ -85,6 +87,39 @@
   </div>
   <div id="saving-indicator" class="saving-indicator">Saving...</div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const mainPointsEditor = new Quill('#main-points-editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'bullet' }]
+            ]
+        },
+        placeholder: 'Enter main points...'
+    });
 
+    const notesEditor = new Quill('#notes-editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link']
+            ]
+        },
+        placeholder: 'Enter notes...'
+    });
+
+    const summaryEditor = new Quill('#summary-editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline']
+            ]
+        },
+        placeholder: 'Enter summary...'
+    });
+  </script>
 </body>
 </html>
