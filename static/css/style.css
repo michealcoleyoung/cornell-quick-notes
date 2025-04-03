@@ -239,8 +239,10 @@ textarea {
 .cornell-container {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 150px); /* Increased space for header */
-    min-height: 0; /* Allows container to shrink */
+    height: calc(100vh - 20px); /* Full height minus padding */
+    padding: 10px; /* Padding around the entire container */
+    gap: 10px; /* Small gap between sections */
+    box-sizing: border-box;
 }
 
 .cornell-header {
@@ -271,7 +273,7 @@ textarea {
 .cornell-body {
     display: flex;
     flex: 1;
-    gap: 5px;
+    gap: 10px; /* Small gap between Main Points and Notes */
     padding: 5px 5px; /* Match the header padding */
 }
 
@@ -279,12 +281,22 @@ textarea {
     width: 30%;
     display: flex;
     flex-direction: column;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .notes-column {
     width: 70%;
     display: flex;
     flex-direction: column;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .main-points-column textarea,
@@ -299,6 +311,14 @@ textarea {
     height: auto; /* Let it adjust naturally */
     padding: 0 5px;
     margin-bottom: 20px; /* Space for export button */
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 20%; /* Summary takes 20% of the height */
 }
 
 .summary-section textarea {
@@ -311,6 +331,10 @@ textarea {
 .summary-section .ql-container {
     height: calc(15vh - 80px) !important; /* Reduced height */
     overflow-y: auto;
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
 }
 
 .summary-section .btn {
@@ -335,11 +359,11 @@ textarea {
     .notes-column {
         width: 100%;
         height: 300px;
-        background: blue;
     }
     
     .summary-section {
         height: 120px;
+        height: auto;
     }
 }
 
@@ -384,4 +408,9 @@ textarea {
 .notes-column .ql-container {
     height: calc(55vh - 150px) !important; /* Slightly reduced */
     overflow-y: auto;
+    flex: 1;
+    height: 100%; /* Ensure editors fill the available space */
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
 }

@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from config import Config
+from livereload import Server
 
 
 app = Flask(__name__)
@@ -77,4 +78,15 @@ with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.debug = True
+
+    # Create a Livereload server
+    server = Server(app.wsgi_app)
+
+    # Watch for changes in templates and static files
+    server.watch('templates/**/*.html')  # Watch all HTML files in templates folder
+    server.watch('static/**/*.css')      # Watch all CSS files in static folder
+    server.watch('app.py')               # Watch the app.py file for changes
+
+    # Start the server
+    server.serve(port=5000, host='127.0.0.1')
