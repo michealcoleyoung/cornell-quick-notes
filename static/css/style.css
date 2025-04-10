@@ -414,3 +414,11 @@ textarea {
     border: 1px solid #dee2e6;
     border-radius: 4px;
 }
+
+.card {
+    height: 100%;
+}
+
+.col-3 {
+    width: 15%
+}
