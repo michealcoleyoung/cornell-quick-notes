@@ -1,4 +1,30 @@
-let currentNoteId = null; // Track the currently selected note
+let currentNoteId = null;
+let mainPointsEditor, notesEditor, summaryEditor;
+
+// Initialize SimpleMDE editors
+function initializeEditors() {
+    mainPointsEditor = new SimpleMDE({ 
+        element: document.getElementById("main-points-editor"),
+        spellChecker: false,
+        status: false
+    });
+    notesEditor = new SimpleMDE({ 
+        element: document.getElementById("notes-editor"),
+        spellChecker: false,
+        status: false
+    });
+    summaryEditor = new SimpleMDE({ 
+        element: document.getElementById("summary-editor"),
+        spellChecker: false,
+        status: false
+    });
+
+    // Add auto-save functionality
+    const debouncedSave = debounce(() => saveNoteContent(), 1000);
+    [mainPointsEditor, notesEditor, summaryEditor].forEach(editor => {
+        editor.codemirror.on("change", debouncedSave);
+    });
+}
 
 function debounce(func, wait) {
     let timeout;
@@ -13,205 +39,164 @@ function debounce(func, wait) {
 }
 
 function addNote() {
-  const noteInput = document.getElementById('note');
-  const noteContent = noteInput.value;
+    const noteInput = document.getElementById('note');
+    const noteContent = noteInput.value;
 
-  if (!noteContent.trim()) {
-    console.error('Note content cannot be empty');
-    return false;
-  }
+    if (!noteContent.trim()) return false;
 
-  fetch('/add_note', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: `note=${encodeURIComponent(noteContent)}`
-  })
+    fetch('/add_note', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `note=${encodeURIComponent(noteContent)}`
+    })
     .then(response => response.text())
     .then(html => {
-
-  const notesList = document.getElementById('notes-list');
-      notesList.classList.remove('hidden');
-      notesList.insertAdjacentHTML('beforeend', html);
-  noteInput.value = '';
-
-      const  newNote = notesList.lastElementChild;
-      newNote.addEventListener('click', function(e) {
-        if (e.target !== this) return; // Ignore clicks on child elements
-        loadNoteContent(this.getAttribute('data-note-id'));
-      })
-    }).catch(error => console.error('Error:', error));
-  return false;
-
+        const notesList = document.getElementById('notes-list');
+        notesList.insertAdjacentHTML('beforeend', html);
+        noteInput.value = '';
+        
+        // Get the new note's ID and trigger click
+        const newNote = notesList.lastElementChild;
+        const noteId = newNote.getAttribute('data-note-id');
+        loadNoteContent(noteId);
+    })
+    .catch(error => console.error('Error:', error));
+    return false;
 }
 
 function deleteNote(button) {
-  const noteItem = button.parentElement;
-  const noteId = noteItem.getAttribute('data-note-id');
+    const noteItem = button.closest('.list-group-item');
+    const noteId = noteItem.getAttribute('data-note-id');
 
-  fetch(`/delete_note/${noteId}`, {
-    method: 'DELETE'
-  })
-    .then(response => {
-      if (response.ok) {
-  noteItem.remove();
-
-        // Clear and disable form fields
-        const formFields = ['class', 'date', 'topic', 'main-points', 'notes', 'summary'];
-
-        formFields.forEach(fieldId => {
-          const field = document.getElementById(fieldId);
-          field.value = '';
-          field.disabled = true;
-        });
-        currentNoteId = null;
-
-      } else {
-        console.error('Failed to delete note');
-      }
+    fetch(`/delete_note/${noteId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            noteItem.remove();
+            if (currentNoteId === parseInt(noteId)) {
+                clearEditors();
+            }
+        }
     })
     .catch(error => console.error('Error:', error));
 }
 
-function saveNoteContent(noteId) {
+function saveNoteContent() {
+    if (!currentNoteId) return;
+
     const indicator = document.getElementById('saving-indicator');
     indicator.style.display = 'block';
-    indicator.textContent = 'Saving...';
-    indicator.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
 
-    fetch(`/save_note_content/${noteId}`, {
+    const data = {
+        class_name: document.getElementById('class').value,
+        date: document.getElementById('date').value,
+        topic: document.getElementById('topic').value,
+        main_points: mainPointsEditor.value(),
+        notes: notesEditor.value(),
+        summary: summaryEditor.value()
+    };
+
+    fetch(`/save_note_content/${currentNoteId}`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            class_name: document.getElementById('class').value,
-            date: document.getElementById('date').value,
-            topic: document.getElementById('topic').value,
-            main_points: mainPointsEditor.root.innerHTML,
-            notes: notesEditor.root.innerHTML,
-            summary: summaryEditor.root.innerHTML
-        })
+        body: JSON.stringify(data)
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to save');
-        }
+    .then(response => response.json())
+    .then(data => {
+        indicator.style.backgroundColor = '#28a745';
         indicator.textContent = 'Saved!';
-        indicator.style.backgroundColor = '#198754';  // Success green
         setTimeout(() => {
             indicator.style.display = 'none';
         }, 1000);
     })
     .catch(error => {
-        console.error('Error saving note:', error);
+        console.error('Error:', error);
+        indicator.style.backgroundColor = '#dc3545';
         indicator.textContent = 'Error saving!';
-        indicator.style.backgroundColor = '#dc3545';  // Danger red
-        setTimeout(() => {
-            indicator.style.display = 'none';
-        }, 2000);
     });
 }
 
 function loadNoteContent(noteId) {
-
-  // Remove highlight from previously selected note
-  document.querySelectorAll('#notes-list li').forEach(note => {
-    note.classList.remove('selected-note');
-  });
-
-  // Add highlight to current note
-  const selectedNote = document.querySelector(`li[data-note-id="${noteId}"]`);
-
-  if(selectedNote) {
-    selectedNote.classList.add('selected-note');
-  }
-
-  currentNoteId = noteId;
-
-  // Enable form fields
-  ['class', 'date', 'topic'].forEach(fieldId => {
-    document.getElementById(fieldId).disabled = false;
-  });
-
-  fetch(`/get_note_content/${noteId}`)
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById('class').value = data.class_name || '';
-      document.getElementById('date').value = data.date || '';
-      document.getElementById('topic').value = data.topic || '';
-      mainPointsEditor.root.innerHTML = data.main_points || '';
-      notesEditor.root.innerHTML = data.notes || '';
-      summaryEditor.root.innerHTML = data.summary || '';
-    })
-    .catch(error => console.error('Error loading note:', error));
-}
-
-
-function formatDate(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US');  // Returns MM/DD/YYYY
-}
-
-
-
-function getDateValue(formattedDate) {
-    if (!formattedDate) return '';
-    const date = new Date(formattedDate);
-    return date.toISOString().split('T')[0];  // Returns YYYY-MM-DD for input
-}
-  
-
-document.addEventListener('DOMContentLoaded', function () {
-    // Form field listeners
-    ['class', 'date', 'topic'].forEach(fieldId => {
-        const field = document.getElementById(fieldId);
-        field.addEventListener('input', function() {
-            if(currentNoteId) {
-                saveNoteContent(currentNoteId);
-            }
-        });
+    // Remove active class from all notes
+    document.querySelectorAll('.note-item').forEach(item => {
+        item.classList.remove('active');
     });
 
-    // Quill editor listeners
-    [mainPointsEditor, notesEditor, summaryEditor].forEach(editor => {
-        editor.on('text-change', debounce(() => {
-            if(currentNoteId) {
-                saveNoteContent(currentNoteId);
-            }
-        }, 1000));
+    // Add active class to selected note
+    const selectedNote = document.querySelector(`.note-item[data-note-id="${noteId}"]`);
+    if (selectedNote) {
+        selectedNote.classList.add('active');
+    }
+
+    currentNoteId = noteId;
+    fetch(`/get_note_content/${noteId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Update form fields
+            document.getElementById('class').value = data.class_name || '';
+            document.getElementById('date').value = data.date || '';
+            document.getElementById('topic').value = data.topic || '';
+            
+            // Update SimpleMDE editors
+            mainPointsEditor.value(data.main_points || '');
+            notesEditor.value(data.notes || '');
+            summaryEditor.value(data.summary || '');
+            
+            // Enable inputs
+            document.getElementById('class').disabled = false;
+            document.getElementById('date').disabled = false;
+            document.getElementById('topic').disabled = false;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to load note content');
+        });
+}
+
+function clearEditors() {
+    // Remove active class from all notes
+    document.querySelectorAll('.note-item').forEach(item => {
+        item.classList.remove('active');
     });
 
-    // Add click handlers for existing notes
-    const existingNotes = document.querySelectorAll('#notes-list li');
-    existingNotes.forEach(note => {
-        note.addEventListener('click', function(e) {
-            if (e.target !== this) return; // Ignore clicks on child elements
-            loadNoteContent(this.getAttribute('data-note-id'));
-        });
+    currentNoteId = null;
+    document.getElementById('class').value = '';
+    document.getElementById('date').value = '';
+    document.getElementById('topic').value = '';
+    mainPointsEditor.value('');
+    notesEditor.value('');
+    summaryEditor.value('');
+    
+    // Disable inputs
+    document.getElementById('class').disabled = true;
+    document.getElementById('date').disabled = true;
+    document.getElementById('topic').disabled = true;
+}
+
+// Update the event listener initialization
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEditors();
+    
+    // Add click event listeners to note items
+    document.getElementById('notes-list').addEventListener('click', function(e) {
+        const noteItem = e.target.closest('.note-item');
+        if (noteItem && !e.target.classList.contains('delete-btn')) {
+            const noteId = noteItem.getAttribute('data-note-id');
+            loadNoteContent(noteId);
+        }
+    });
+
+    // Add new note item click handler
+    document.addEventListener('note-added', function(e) {
+        const newNoteItem = document.querySelector(`.note-item[data-note-id="${e.detail.noteId}"]`);
+        if (newNoteItem) {
+            newNoteItem.click();
+        }
     });
 });
-
-// Add character/line limits
-const LIMITS = {
-    mainPoints: 1000,  // Adjust these numbers
-    notes: 2000,
-    summary: 500
-};
-
-// Add content monitoring
-function checkContentLimits(editor, limit) {
-    const length = editor.getText().length;
-    const container = editor.container.querySelector('.ql-editor');
-    
-    if (length >= limit * 0.9) {  // At 90% capacity
-        container.classList.add('near-limit');
-    }
-    if (length >= limit) {  // At full capacity
-        container.classList.add('at-limit');
-        return false;  // Prevent more input
-    }
-    return true;
-}
