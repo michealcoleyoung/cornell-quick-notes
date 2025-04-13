@@ -435,7 +435,7 @@ textarea {
 }
 
 .CodeMirror, .CodeMirror-scroll {
-    min-height: 300px;
+    min-height: 670px;
 }
 
 .tab-content {
