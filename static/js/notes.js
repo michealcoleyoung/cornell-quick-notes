@@ -20,7 +20,7 @@ function initializeEditors() {
     });
 
     // Add auto-save functionality
-    const debouncedSave = debounce(() => saveNoteContent(), 1000);
+    const debouncedSave = debounce(() => saveNoteContent(), 100);
     [mainPointsEditor, notesEditor, summaryEditor].forEach(editor => {
         editor.codemirror.on("change", debouncedSave);
     });
@@ -113,7 +113,7 @@ function saveNoteContent() {
         indicator.textContent = 'Saved!';
         setTimeout(() => {
             indicator.style.display = 'none';
-        }, 1000);
+        }, 100);
     })
     .catch(error => {
         console.error('Error:', error);

@@ -462,3 +462,27 @@ textarea {
     border-color: #dc3545;
     color: white;
 }
+
+
+/* SimpleMDE styling */
+.editor-toolbar{
+    opacity: 1; /* Ensures no opacity is applied */
+    border: 2px solid black; /* Adds a 2px solid black border */
+    border-bottom: none;
+    
+}
+
+.editor-toolbar::before {
+    color: black;
+}
+
+
+
+
+.CodeMirror.cm-s-paper.CodeMirror-wrap {
+border: 2px solid black;
+}
+
+a.fa {
+color: black;
+}
