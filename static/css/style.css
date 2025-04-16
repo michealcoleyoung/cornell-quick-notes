@@ -518,9 +518,109 @@ textarea {
 }
 
 .CodeMirror.cm-s-paper.CodeMirror-wrap {
-border: 2px solid black;
+border: 2px solid var(--ef-border);
+background-color: var(--ef-bg-dim);
+color: var(--ef-fg) !important;
 }
 
 a.fa {
 color: black;
+}
+
+/* Everforest Theme Variables */
+:root {
+    --ef-bg-dim: #2b3339;
+    --ef-bg: #2f383e;
+    --ef-bg-light: #374247;
+    --ef-fg: #d3c6aa;
+    --ef-fg-dim: #9da9a0;
+    --ef-green: #a7c080;
+    --ef-red: #e67e80;
+    --ef-blue: #7fbbb3;
+    --ef-border: #4f5b58;
+    --ef-selection: #503946;
+}
+
+/* Base elements */
+body {
+    background-color: var(--ef-bg);
+    color: var(--ef-fg);
+}
+
+/* Sidebar styling */
+.sidebar {
+    background-color: var(--ef-bg-dim);
+    border-right: 1px solid var(--ef-border);
+}
+
+/* Input elements */
+.form-control {
+    background-color: var(--ef-bg-light);
+    border-color: var(--ef-border);
+    color: var(--ef-fg);
+}
+
+.form-control:focus {
+    background-color: var(--ef-bg-light);
+    border-color: var(--ef-green);
+    color: var(--ef-fg);
+    box-shadow: 0 0 0 0.2rem rgba(167, 192, 128, 0.25);
+}
+
+/* Notes list */
+.list-group-item {
+    background-color: var(--ef-bg-light);
+    border-color: var(--ef-border);
+    color: var(--ef-fg);
+}
+
+.note-item:hover {
+    background-color: var(--ef-bg);
+}
+
+.note-item.active {
+    background-color: var(--ef-green);
+    color: var(--ef-bg-dim);
+    border-color: var(--ef-border);
+}
+
+/* Card styling */
+.card {
+    background-color: var(--ef-bg-light);
+    border-color: var(--ef-border);
+}
+
+/* Editor styling */
+.editor-toolbar {
+    background-color: var(--ef-bg-dim);
+    border-color: var(--ef-border);
+}
+
+.editor-toolbar a {
+    color: var(--ef-fg-dim) !important;
+}
+
+.editor-toolbar a:hover {
+    background-color: var(--ef-bg-light) !important;
+    color: var(--ef-fg)
+}
+
+#export-note {
+    background-color: var(--ef-green);
+}
+
+.nav-link {
+    color: var(--ef-fg) !important;
+
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--ef-green) !important;
+    color: var(--ef-bg-dim) !important;
+    /* position: static !important; */
+}
+
+.nav-link:hover {
+    background-color: var(--ef-bg-light) !important;
+    color: var(--ef-fg) !important;
 }
