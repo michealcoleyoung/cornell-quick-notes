@@ -605,6 +605,10 @@ body {
     color: var(--ef-fg)
 }
 
+#add-note {
+    background-color: var(--ef-green) !important;
+}
+
 #export-note {
     background-color: var(--ef-green);
 }
