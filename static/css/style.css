@@ -1,11 +1,32 @@
+/* Add at the top of your CSS file */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.25); /* Increased opacity from 0.2 to 0.25 */
+    pointer-events: none;
+    z-index: 2147483647;
+    mix-blend-mode: multiply; /* This will help blend the darkness more naturally */
+}
+
+/* Ensure other elements remain visible but dimmed */
+.container-fluid {
+    position: relative;
+    z-index: 1;
+}
+
 /* Add these styles at the top of your CSS file */
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden;
+   font-family: Arial, Helvetica, sans-serif;
 }
-
 .container-fluid {
     height: 100vh;
     overflow: hidden;
@@ -21,7 +42,6 @@ html, body {
 }
 
 body {
-    font-family: Arial, sans-serif;
     background-color: #d4b48f; /* Background similar to the notebook */
     padding: 0;
     margin: 0;
@@ -84,7 +104,6 @@ body {
     /* border: 2px solid black; */
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #dee2e6;
     padding: 1rem;
 }
 
@@ -249,10 +268,16 @@ textarea {
     padding: 10px; /* Padding around the entire container */
     gap: 10px; /* Small gap between sections */
     box-sizing: border-box;
+    height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .cornell-header {
     padding: 0 5px; /* Match the padding of the content below */
+    flex-shrink: 0;
 }
 
 .cornell-header .row {
@@ -423,6 +448,18 @@ textarea {
 
 .card {
     height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+.card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .col-3 {
@@ -435,12 +472,14 @@ textarea {
 }
 
 .CodeMirror, .CodeMirror-scroll {
-    min-height: 670px;
+    min-height: 680px;
 }
 
 .tab-content {
     height: calc(100vh - 250px);
     overflow-y: auto;
+    flex: 1;
+    overflow: auto;
 }
 
 .note-item {
@@ -452,9 +491,9 @@ textarea {
 }
 
 .note-item.active {
-    background-color: #0d6efd;
-    color: white;
-    border-color: #0d6efd;
+    background-color: #83C092;
+    color: rgb(0, 0, 0);
+    border-color: #000000;
 }
 
 .note-item.active .delete-btn {
@@ -463,21 +502,20 @@ textarea {
     color: white;
 }
 
+.tab-pane {
+    height: 100%;
+}
 
 /* SimpleMDE styling */
 .editor-toolbar{
     opacity: 1; /* Ensures no opacity is applied */
     border: 2px solid black; /* Adds a 2px solid black border */
     border-bottom: none;
-    
 }
 
-.editor-toolbar::before {
+.editor-toolbar::before{
     color: black;
 }
-
-
-
 
 .CodeMirror.cm-s-paper.CodeMirror-wrap {
 border: 2px solid black;
