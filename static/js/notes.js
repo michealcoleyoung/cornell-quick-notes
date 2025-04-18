@@ -200,3 +200,49 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function exportNote() {
+    if (!currentNoteId) {
+        alert('Please select a note to export.');
+        return;
+    }
+
+    // Get current note data
+    const data = {
+        class_name: document.getElementById('class').value,
+        date: document.getElementById('date').value,
+        topic: document.getElementById('topic').value,
+        main_points: mainPointsEditor.value(),
+        notes: notesEditor.value(),
+        summary: summaryEditor.value()
+    };
+
+    // Make export request
+    fetch(`/export_note/${currentNoteId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+        })
+        .then(response => response.blob())
+        .then(blob => {
+        // Create Download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `${data.class_name}_${data.topic}.md`.replace(/\s+/g, '_');
+        document.body.appendChild(a);
+        a.click();
+        // Clean up
+        setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        }, 100);
+        })
+        .catch(error => {
+            console.error('Error exporting note:', error);
+            alert('Failed to export note.');
+        });
+}

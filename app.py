@@ -68,6 +68,31 @@ def get_note_content(note_id):
         'summary': note.summary
     })
 
+@app.route('/export_note/<int:note_id>', methods=['POST'])
+def export_note(note_id):
+    note = Note.query.get_or_404(note_id)
+    data = request.json
+    
+    # Format the note as Markdown
+    markdown_content = f"# {note.topic}\n\n"
+    markdown_content += f"Class: {note.class_name}\n"
+    markdown_content += f"Date: {note.date}\n\n"
+    markdown_content += "## Main Points\n"
+    markdown_content += f"{note.main_points}\n\n"
+    markdown_content += "## Notes\n"
+    markdown_content += f"{note.notes}\n\n"
+    markdown_content += "## Summary\n"
+    markdown_content += f"{note.summary}\n"
+    
+    response = app.response_class(
+        response=markdown_content,
+        status=200,
+        mimetype='text/markdown'
+    )
+    response.headers['Content-Disposition'] = f"attachment; filename={note.class_name}_{note.topic}.md"
+    return response
+    
+
 with app.app_context():
     db.create_all()
 
