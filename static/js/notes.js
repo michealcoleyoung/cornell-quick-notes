@@ -69,20 +69,24 @@ function addNote() {
 function deleteNote(button) {
     const noteItem = button.closest('.list-group-item');
     const noteId = noteItem.getAttribute('data-note-id');
+    const noteTitle = noteItem.querySelector('.note-title').textContent.trim();
 
-    fetch(`/delete_note/${noteId}`, {
-        method: 'DELETE'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            noteItem.remove();
-            if (currentNoteId === parseInt(noteId)) {
-                clearEditors();
+    if (confirm(`Are you sure you want to delete ${noteTitle}?`)) {
+
+        fetch(`/delete_note/${noteId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                noteItem.remove();
+                if (currentNoteId === parseInt(noteId)) {
+                    clearEditors();
+                }
             }
-        }
-    })
-    .catch(error => console.error('Error:', error));
+        })
+        .catch(error => console.error('Error:', error));
+    }
 }
 
 function saveNoteContent() {
